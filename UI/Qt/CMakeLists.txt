@@ -8,7 +8,14 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/Interop interop)
 
 project(MtSparked_UI_Qt)
 
-add_library(${PROJECT_NAME} INTERFACE)
+add_executable(${PROJECT_NAME} src/main.cpp src/mainwindow.cpp src/mainwindow.ui
+                               include/mtsparked/ui/qt/views/mainwindow.h
+                               include/mtsparked/ui/qt/viewmodels/settingsviewmodel.h
+                               include/mtsparked/ui/qt/viewmodels/cards/cardviewmodel.h
+                               include/mtsparked/ui/qt/viewmodels/decks/deckviewmodel.h
+                               include/mtsparked/ui/qt/viewmodels/search/domaincriteriaviewmodel.h
+                               include/mtsparked/ui/qt/viewmodels/search/searchcriteriaviewmodel.h
+                               include/mtsparked/ui/qt/viewmodels/search/searchviewmodel.h)
 
 set(BUILD_FROM_SOURCE "" CACHE STRING "Build these packages from source, very time intensive. Can use all to make it build all from source.")
     
@@ -19,12 +26,6 @@ if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
             "${CMAKE_BINARY_DIR}/conan.cmake")
 endif()
 
-target_sources(${PROJECT_NAME} INTERFACE include/mtsparked/ui/qt/viewmodels/settingsviewmodel.h
-                                         include/mtsparked/ui/qt/viewmodels/cards/cardsviewmodel.h
-                                         include/mtsparked/ui/qt/viewmodels/decks/decksviewmodel.h
-                                         include/mtsparked/ui/qt/viewmodels/search/domaincriteriaviewmodel.h
-                                         include/mtsparked/ui/qt/viewmodels/search/searchcriteriaviewmodel.h
-                                         include/mtsparked/ui/qt/viewmodels/search/searchviewmodel.h)
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
@@ -51,13 +52,16 @@ if(${PROJECT_NAME}_REQUIRE_CONAN_LIBS)
     endforeach()
 endif()
 
-# find_package(Qt5 COMPONENTS Widgets REQUIRED)
-# find_package(Qt5 COMPONENTS Core REQUIRED)
+target_include_directories(${PROJECT_NAME} PUBLIC include)
 
-target_include_directories(${PROJECT_NAME} INTERFACE ${CURRENT_SOURCE_DIR}/include)
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+find_package(Qt5 COMPONENTS REQUIRED Core Gui Widgets)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/extern/compiletime-plugins compiletime-plugins)
 
-target_link_libraries(MtSparked_UI_Qt INTERFACE CompileTimePlugins 
-                                                # Qt5::Widgets Qt5::Core
-                                                MtSparked_Interop)
+target_link_libraries(MtSparked_UI_Qt PUBLIC CompileTimePlugins 
+                                             Qt5::Widgets Qt5::Core Qt5::Gui
+                                             MtSparked_Interop)
