@@ -4,3 +4,6 @@
 [submodule "Services/CouchBaseLite/extern/couchbase-lite-C"]
 	path = Services/Providers/CouchBaseLiteProvider/extern/couchbase-lite-C
 	url = https://github.com/couchbaselabs/couchbase-lite-C
+[submodule "Interop/extern/crossguid"]
+	path = Interop/extern/crossguid
+	url = https://github.com/graeme-hill/crossguid

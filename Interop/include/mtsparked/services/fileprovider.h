@@ -5,6 +5,10 @@
 
 #include "mtsparked/utils/utils.h"
 
+template<typename Buffer>
+struct FileProviderPlugin {
+
+
 template<size_t maxSize=8, size_t maxAlign=8>
 class FileProvider {
 private:
