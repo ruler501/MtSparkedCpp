@@ -20,6 +20,7 @@ target_sources(${PROJECT_NAME}Library PUBLIC include/mtsparked/tools/updatedatab
                                       PRIVATE src/updateDatabase.cpp)
 target_link_libraries(${PROJECT_NAME}Library PUBLIC CompileTimePlugins
                                                     MtSparked_Interop)
+target_include_directories(${PROJECT_NAME}Library PUBLIC include)
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}Library)

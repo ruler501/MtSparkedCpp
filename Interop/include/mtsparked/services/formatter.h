@@ -4,93 +4,81 @@
 #include <string_view>
 #include <type_traits>
 
-#include "mtsparked/utils/utils.h"
+#include "compiletimeplugins/utils.h"
 
-template<typename Source, typename Result, size_t maxSize=8, size_t maxAlignment=8>
-class OutFormatter {
-private:
-    initializing_buffer<maxSize, maxAlignment> buffer;
-    using formatFunction = Result(*)(void*, Source);
-    formatFunction formatPtr;
+template<typename Source, typename Result>
+struct OutFormatterFeature {
+    template <typename Buffer>
+    class type {
+    public:
+        using source_type = Source;
+        using result_type = Result;
 
-public:
-    std::string_view name;
-    std::string_view version;
+    protected:
+        using formatFunc = Result(*)(const void*, const Source&);
+        formatFunc formatPtr;
 
-    using source_type = Source;
-    using result_type = result;
-    
-    template<typename T, typename=std::enable_if_t<!std::is_same_v<T, OutFormatter>>>
-    OutFormatter(T&& toErase) : initializing_buffer(std::forward<T>(toErase)),
-                                formatPtr([](void* obj, Source src){ return static_cast<T*>(obj)->format(src); }
-    { }
+    public:
+        std::string_view name;
+        std::string_view version;
 
-    OutFormatter(const OutFormatter& other) = delete;
-    OutFormatter(OutFormatter&& other) = delete;
+        template<typename T, typename=std::enable_if_t<!std::is_same_v<std::decay_t<T>, OutFormatterFeature>>>
+        OutFormatterFeature(type_value<T>)
+                : formatPtr([](const void* obj, const Source& src){ return static_cast<const T*>(obj)->format(src); }
+        { }
 
-    constexpr Result format(Source src) {
-        return formatPtr(buffer, src);
-    }
+        OutFormatterFeature(const OutFormatterFeature& other) = delete;
+        OutFormatterFeature(OutFormatterFeature&& other) = delete;
+
+        constexpr Result format(const Source& src) const {
+            return formatPtr(static_cast<const void*>(static_cast<const Buffer&>(*this)), src);
+        }
+    };
 };
 
-template<typename Source, typename Result, size_t maxSize=8, size_t maxAlignment=8>
-class InFormatter {
-private:
-    initializing_buffer<maxSize, maxAlignment> buffer;
-    using parseFunction = Source(*)(void*, Result);
-    parseFunction parsePtr;
+template<typename Source, typename Result>
+struct InFormatterFeature {
+    template <typename Buffer>
+    class type {
+    public:
+        using source_type = Source;
+        using result_type = Result;
 
-public:
-    std::string_view name;
-    std::string_view version;
+    protected:
+        using parseFunc = Source(*)(const void*, const Result&);
+        parseFunc parsePtr;
 
-    using source_type = Source;
-    using result_type = result;
-    
-    template<typename T, typename=std::enable_if_t<!std::is_same_v<T, InFormatter>>>
-    InFormatter(T&& toErase) : initializing_buffer(std::forward<T>(toErase)),
-                               parsePtr{[](void* obj, Result res){ return static_cast<std::remove_reference_t<T>*>(obj)->parse(res); }}
-    { }
+    public:
+        std::string_view name;
+        std::string_view version;
 
-    InFormatter(const InFormatter& other) = delete;
-    InFormatter(InFormatter&& other) = delete;
+        template<typename T, typename=std::enable_if_t<!std::is_same_v<std::decay_t<T>, InFormatterFeature>>>
+        InFormatterFeature(type_value<T>)
+                : formatPtr([](const void* obj, const Source& src){ return static_cast<const T*>(obj)->format(src); }
+        { }
 
-    constexpr Source parse(Result res) {
-        return parsePtr(buffer, res);
-    }
+        InFormatterFeature(const InFormatterFeature& other) = delete;
+        InFormatterFeature(InFormatterFeature&& other) = delete;
+
+        constexpr Result format(const Source& src) const {
+            return formatPtr(static_cast<const void*>(static_cast<const Buffer&>(*this)), src);
+        }
+    };
 };
 
-template<typename Source, typename Result, size_t maxSize=8, size_t maxAlignment=8>
-class Formatter {
-private:
-    initializing_buffer<maxSize, maxAlignment> buffer;
-    using formatFunction = Result(*)(void*, Source);
-    formatFunction formatPtr;
-    using parseFunction = Source(*)(void*, Result);
-    parseFunction parsePtr;
+template <typename... Features>
+using OutFormatter_t = erased<OutFormatterFeature, Features...>;
 
-public:
-    std::string_view name;
-    std::string_view version;
+using OutFormatter = OutFormatter_t<>;
 
-    using source_type = Source;
-    using result_type = result;
-    
-    template<typename T, typename=std::enable_if_t<!std::is_same_v<T, InFormatter>>>
-    Formatter(T&& toErase) : initializing_buffer(std::forward<T>(toErase)),
-                             formatPtr{[](void* obj, Source src){ return static_cast<std::remove_reference_t<T>*>(obj)->format(src); }}
-                             parsePtr{[](void* obj, Result res){ return static_cast<std::remove_reference_t<T>*>(obj)->parse(res); }}
-    { }
+template <typename... Features>
+using InFormatter_t = erased<InFormatterFeature, Features...>;
 
-    Formatter(const Formatter& other) = delete;
-    Formatter(Formatter&& other) = delete;
+using InFormatter = InFormatter_t<>;
 
-    constexpr Result format(Source src) {
-        return formatPtr(buffer, src);
-    }
+template <typename... Features>
+using Formatter_t = erased<OutFormatterFeature, InFormatterFeature, Features...>;
 
-    constexpr Source parse(Result res) {
-        return parsePtr(buffer, res);
-    }
-};
+using Formatter = Formatter_t<>;
+
 #endif // !_MTSPARKED_FORMATTER_H_
