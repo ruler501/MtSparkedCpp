@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 #ifndef _MTSPARKED_FILEPROVIDER_H_
 #define _MTSPARKED_FILEPROVIDER_H_
 
@@ -6,9 +8,10 @@
 #include <optional>
 #include <string>
 #include <type_traits>
+#include <utility>
 #include <vector>
 
-#include "compiletimeplugins/utils.h"
+#include "compiletimeplugins/erasure.h"
 
 #include "mtsparked/utils/erasedcontainer.h"
 
@@ -57,7 +60,7 @@ public:
     }
 };
 
-template <typename... Features>
+template <template<typename> typename... Features>
 using FileProvider = erased<FileProviderFeature, Features...>;
 
 struct File {
@@ -71,11 +74,11 @@ public:
 
     explicit File(std::string _name) : name(std::move(_name)) { }
 
-    File(const std::string& _name, std::weak_ptr<FileProvider<>> _provider)
-            : File(_name), provider(_provider)
+    File(std::string&& _name, std::weak_ptr<FileProvider<>>  _provider)
+            :  name(std::move(_name)), provider(std::move(_provider))
     { }
 
-    File(const std::string& _name, const ErasedContainer<std::byte>::type& _contents)
+    File(const std::string& _name, const ErasedContainer<std::byte>& _contents)
             : File(_name), contents(_contents.begin(), _contents.end())
     { }
 
@@ -93,7 +96,7 @@ public:
     { }
 
     ~File() {
-        this->release();zzzzzzzzzzzzzzzzzzzzzzzz
+        this->release();
     }
 
     bool save() {
@@ -111,3 +114,5 @@ public:
 };
 
 #endif // !_MTSPAREKD_FILEPROVIDER_H_
+
+#pragma clang diagnostic pop

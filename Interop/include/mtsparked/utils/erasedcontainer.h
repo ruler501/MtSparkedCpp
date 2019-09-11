@@ -7,7 +7,11 @@
 #include <iterator>
 #include <type_traits>
 
-#include "compiletimeplugins/utils.h"
+#include "compiletimeplugins/erasure.h"
+#include "compiletimeplugins/compiletimepluginsregistry.h"
+
+template<typename T>
+struct ContainerFeature;
 
 template <typename S>
 struct CountingIteratorFeature {
@@ -27,8 +31,7 @@ struct CountingIteratorFeature {
         arrowConstFunc arrowConstPtr;
         incrFunc incrPtr;
 
-        template<typename Buf>
-        friend class ContainingFeature<S>::type<Buf>;
+        friend class ContainerFeature<S>;
 
         using iterator_category = std::forward_iterator_tag;
         using value_type = S;
@@ -37,7 +40,7 @@ struct CountingIteratorFeature {
         using reference = S &;
 
         template <typename T>
-        type(type_value<T>)
+        constexpr explicit type(type_value<T>)
                 : derefPtr([](void* obj){ return *static_cast<T*>(obj)->operator*();}),
                   derefConstPtr([](const void* obj){ return static_cast<T*>(obj)->operator*(); }),
                   arrowPtr([](void* obj){ return static_cast<T*>(obj)->operator->(); }),
@@ -83,8 +86,8 @@ struct ContainerFeature {
     template<typename Buffer>
     class type {
     public:
-        using iterator = erased<CountingIteratorFeature<S>::type>;
-        using const_iterator = erased<CountingIteratorFeature<const S>::type>
+        using iterator = erased<CountingIteratorFeature<S>::template type>;
+        using const_iterator = erased<CountingIteratorFeature<const S>::template type>;
 
     protected:
         using sizeFunc = std::size_t(*)(const void*);
@@ -98,8 +101,8 @@ struct ContainerFeature {
         endFunc endPtr;
         endConstFunc endConstPtr;
 
-        template<typename T, typename=std::enable_if_t<!std::is_base_of<type, T>>>
-        type(type_value<T>)
+        template<typename T, typename=std::enable_if_t<!std::is_base_of_v<type, T>>>
+        explicit type(type_value<T>)
                 : sizePtr([](const void* obj){ return static_cast<const T*>(obj)->size(); }),
                   beginPtr([](void* obj){ return iterator(type_list<decltype(std::declval<T>().begin())>{}, static_cast<T*>(obj)->begin());}),
                   beginConstPtr([](const void* obj){ return const_iterator(type_list<decltype(std::declval<const T>().begin())>{}, static_cast<const T*>(obj)->begin());}),
@@ -112,50 +115,50 @@ struct ContainerFeature {
         { }
 
     public:
-        std::size_t size() const {
-            return this->sizePtr(static_cast<const void*>(static_cast<const Buffer&>(obj)));
+        [[nodiscard]] std::size_t size() const {
+            return this->sizePtr(static_cast<const void*>(static_cast<const Buffer&>(*this)));
         }
 
-        S& at(size_t index) {
+        [[nodiscard]] S& at(size_t index) {
             iterator iter = begin();
             return *std::advance(iter, index);
         }
 
-        const S& at(size_t index) const {
+        [[nodiscard]] const S& at(size_t index) const {
             const_iterator iter = begin();
             return *std::advance(iter, index);
         }
 
-        friend S& operator[](type& left, size_t index) {
-            return left.at(index);
+        [[nodiscard]] S& operator[](size_t index) {
+            return this->at(index);
         }
 
-        friend const S& operator[](const type& left, size_t index) const {
-            return left.at(index);
+        const S& operator[](size_t index) const {
+            return this->at(index);
         }
 
         iterator begin() {
-            return this->beginPtr(static_cast<void*>(static_cast<Buffer&>(obj)));
+            return this->beginPtr(static_cast<void*>(static_cast<Buffer&>(*this)));
         }
 
         const_iterator begin() const {
-            return this->beginConstPtr(static_cast<const void*>(static_cast<const Buffer&>(obj)));
+            return this->beginConstPtr(static_cast<const void*>(static_cast<const Buffer&>(*this)));
         }
 
         iterator end() {
-            return this->endPtr(static_cast<void*>(static_cast<Buffer&>(obj)));
+            return this->endPtr(static_cast<void*>(static_cast<Buffer&>(*this)));
         }
 
         const_iterator end() const {
-            return this->endConstPtr(static_cast<const void*>(static_cast<const Buffer&>(obj)));
+            return this->endConstPtr(static_cast<const void*>(static_cast<const Buffer&>(*this)));
         }
     };
 };
 
+template <typename S, template <typename> typename... Features>
+using ErasedContainer_t = erased<ContainerFeature, Features...>;
+
 template <typename S>
-struct ErasedContainer {
-    template<typename... Features>
-    using type = erased<ContainerFeature, Features...>;
-};
+using ErasedContainer = ErasedContainer_t<S>;
 
 #endif //MTSPARKED_ERASEDCONTAINER_H

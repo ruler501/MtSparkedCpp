@@ -34,6 +34,7 @@ if(NOT TARGET MtSparked_Interop)
                                               include/mtsparked/services/querypersistence.h
                                               include/mtsparked/services/queryprovider.h
                                               include/mtsparked/services/settings.h
+                                              include/mtsparked/utils/compiletimestring.h
                                               include/mtsparked/utils/erasedcontainer.h)
     target_include_directories(${PROJECT_NAME} INTERFACE include)
     target_link_libraries(MtSparked_Interop INTERFACE CompileTimePlugins
