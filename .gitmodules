@@ -1,5 +1,5 @@
 [submodule "Interop/extern/crossguid"]
-	path = Interop/extern/crossguid
+	path = extern/crossguid
 	url = https://github.com/graeme-hill/crossguid
 	branch = master
 [submodule "extern/yaml-cpp"]
