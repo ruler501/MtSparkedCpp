@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(MtSparked_Tests_UI_Qt)
 
 if(NOT TARGET MtSparked_UI_QtLibrary)
-    add_subdirectory("${CMAKE_SOURCE_DIR}/UI/QT" qt)
+    add_subdirectory("${CMAKE_SOURCE_DIR}/UI/Qt" qt)
 endif()
 
 add_executable(${PROJECT_NAME} src/qtUiTests.cpp)

@@ -1,11 +1,3 @@
-[submodule "extern/compiletime-plugins"]
-	path = extern/compiletime-plugins
-	url = https://github.com/ruler501/compiletime-plugins.git
-	branch = master
-[submodule "Services/CouchBaseLite/extern/couchbase-lite-C"]
-	path = Services/Providers/CouchBaseLiteProvider/extern/couchbase-lite-C
-	url = https://github.com/couchbaselabs/couchbase-lite-C
-	branch = master
 [submodule "Interop/extern/crossguid"]
 	path = Interop/extern/crossguid
 	url = https://github.com/graeme-hill/crossguid

@@ -5,7 +5,7 @@ if(NOT TARGET MtSparked_Interop)
 
     option(CROSSGUID_TESTS "Build test runner for crossguid." OFF)
     
-    add_subdirectory(${CMAKE_SOURCE_DIR}/extern/compiletime-plugins compiletime-plugins)
+    
     add_subdirectory(extern/crossguid)
 
     add_library(${PROJECT_NAME} INTERFACE)
@@ -13,7 +13,7 @@ if(NOT TARGET MtSparked_Interop)
     set(${PROJECT_NAME}_CONAN_LIBS)
     set(${PROJECT_NAME}_CONAN_REMOTES)
 
-    include(${CMAKE_SOURCE_DIR}/extern/compiletime-plugins/cmake/AddConanLibs.cmake)
+    include(${CMAKE_SOURCE_DIR}/cmake/AddConanLibs.cmake)
     AddConanLibs(TARGET ${PROJECT_NAME}
                  ACCESS INTERFACE
                  REMOTES ${${PROJECT_NAME}_CONAN_REMOTES}
@@ -37,6 +37,6 @@ if(NOT TARGET MtSparked_Interop)
                                               include/mtsparked/utils/compiletimestring.h
                                               include/mtsparked/utils/erasedcontainer.h)
     target_include_directories(${PROJECT_NAME} INTERFACE include)
-    target_link_libraries(MtSparked_Interop INTERFACE CompileTimePlugins
+    target_link_libraries(MtSparked_Interop INTERFACE
                                                       crossguid)
 endif()

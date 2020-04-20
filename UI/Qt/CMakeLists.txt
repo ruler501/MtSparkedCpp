@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.14)
 
 project(MtSparked_UI_Qt)
 
-add_subdirectory(${CMAKE_SOURCE_DIR}/extern/compiletime-plugins compiletime-plugins)
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/Interop interop)
 
 set(CMAKE_AUTOMOC ON)
@@ -23,8 +23,7 @@ target_sources(${PROJECT_NAME}Library PRIVATE src/mainwindow.cpp
                                               include/mtsparked/ui/qt/viewmodels/search/searchcriteriaviewmodel.h
                                               include/mtsparked/ui/qt/viewmodels/search/searchviewmodel.h)
 target_include_directories(${PROJECT_NAME}Library PUBLIC include)
-target_link_libraries(${PROJECT_NAME}Library PUBLIC  CompileTimePlugins 
-                                                     MtSparked_Interop
+target_link_libraries(${PROJECT_NAME}Library PUBLIC  MtSparked_Interop
                                                      Qt5::Widgets 
                                              PRIVATE Qt5::Core
                                                      Qt5::Gui)

@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.14)
 project(MtSparked_Services_CubeParser CXX)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Interop interop)
-add_subdirectory(${CMAKE_SOURCE_DIR}/extern/compiletime-plugins compiletime-plugins)
+
 
 add_library(${PROJECT_NAME} INTERFACE)
 
@@ -13,15 +13,11 @@ set(${PROJECT_NAME}_CONAN_REMOTES)
 list(APPEND ${PROJECT_NAME}_CONAN_LIBS "boost_spirit/1.69.0@bincrafters/stable")
 list(APPEND ${PROJECT_NAME}_CONAN_REMOTES "https://api.bintray.com/conan/bincrafters/public-conan")
 
-include(${CMAKE_SOURCE_DIR}/extern/compiletime-plugins/cmake/AddConanLibs.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/AddConanLibs.cmake)
 AddConanLibs(TARGET ${PROJECT_NAME}
              ACCESS INTERFACE
              REMOTES ${${PROJECT_NAME}_CONAN_REMOTES}
              LIBS ${${PROJECT_NAME}_CONAN_LIBS})
-
-configure_file(include/compiletimeplugins/plugins/cubeparserservicecreator.h
-               ${CMAKE_CURRENT_BINARY_DIR}/generated/include/compiletimeplugins/plugins/cubeparserservicecreator.h
-               COPYONLY)
 
 target_sources(${PROJECT_NAME} INTERFACE include/mtsparked/services/packgenerator/cubeparser/cubeparser.h
                                          include/mtsparked/services/packgenerator/cubeparser/nodewrapper.h
@@ -43,8 +39,8 @@ target_sources(${PROJECT_NAME} INTERFACE include/mtsparked/services/packgenerato
                                          include/mtsparked/services/packgenerator/cubeparser/nodes/propfunctionnodewrapper.h
                                          include/mtsparked/services/packgenerator/cubeparser/nodes/propfunctionnodes/arraypropositions.h
                                          include/mtsparked/services/packgenerator/cubeparser/nodes/propfunctionnodes/operatorpropositions.h
-                                         include/mtsparked/services/packgenerator/cubeparser/nodes/propfunctionnodes/propositions.h
-                                         include/compiletimeplugins/plugins/cubeparserservicecreator.h)
+                                         include/mtsparked/services/packgenerator/cubeparser/nodes/propfunctionnodes/propositions.h)
+
 target_include_directories(${PROJECT_NAME} INTERFACE ${CURRENT_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} INTERFACE CompileTimePlugins
+target_link_libraries(${PROJECT_NAME} INTERFACE
                                                 MtSparked_Interop)

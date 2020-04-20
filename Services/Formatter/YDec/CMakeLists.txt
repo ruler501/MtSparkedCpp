@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(MtSparked_Services_Formatter_Dec CXX)
+project(MtSparked_Services_Formatter_YDec CXX)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/Interop interop)
 
@@ -15,8 +15,8 @@ AddConanLibs(TARGET ${PROJECT_NAME}
              REMOTES ${${PROJECT_NAME}_CONAN_REMOTES}
              LIBS ${${PROJECT_NAME}_CONAN_LIBS})
 
-target_sources(${PROJECT_NAME} INTERFACE include/mtsparked/services/formatter/dec/decformatter.h)
+target_sources(${PROJECT_NAME} INTERFACE include/mtsparked/services/formatter/ydec/ydecformatter.h)
 
 target_include_directories(${PROJECT_NAME} INTERFACE ${CURRENT_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME} INTERFACE
+target_link_libraries(${PROJECT_NAME} INTERFACE 
                                                 MtSparked_Interop)
