@@ -1,14 +1,8 @@
-//
-// Created by Devon Richards on 9/9/19.
-//
 #ifndef MTSPARKED_ERASEDCONTAINER_H
 #define MTSPARKED_ERASEDCONTAINER_H
 
 #include <iterator>
 #include <type_traits>
-
-
-
 
 template<typename T>
 struct ContainerFeature;
@@ -18,7 +12,7 @@ struct CountingIteratorFeature {
     template <typename Buffer>
     class type {
     protected:
-        size_t currentCount{0};
+        std::size_t currentCount{0};
 
         using derefFunc = S&(*)(void *);
         using derefConstFunc = const S&(*)(const void*);

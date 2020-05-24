@@ -5,3 +5,9 @@
 [submodule "extern/yaml-cpp"]
 	path = extern/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "extern/couchbase-lite-C"]
+	path = extern/couchbase-lite-C
+	url = https://github.com/couchbaselabs/couchbase-lite-C
+[submodule "extern/cppproperty"]
+	path = extern/cppproperty
+	url = https://github.com/ruler501/cppproperty

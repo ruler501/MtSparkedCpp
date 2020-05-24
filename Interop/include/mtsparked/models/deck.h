@@ -1,21 +1,25 @@
 #ifndef _MTSPARKED_DECK_H_
 #define _MTSPARKED_DECK_H_
 
+#include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include "mtsparked/utils/compiletimestring.h"
+#include "mtsparked/models/card.h"
 #include "mtsparked/services/fileprovider.h"
 
 namespace MtSparked {
     struct Deck {
-        static constexpr CompileTimeString MASTER = "Total";
-        static constexpr CompileTimeString MAINBOARD = "Mainboard";
-        static constexpr CompileTimeString SIDEBOARD = "Sideboard";
-        static constexpr CompileTimeString UNNAMED = "Unnamed";
+        static constexpr std::string MASTER = "Total";
+        static constexpr std::string MAINBOARD = "Main";
+        static constexpr std::string SIDEBOARD = "Sideboard";
+        static constexpr std::string UNNAMED = "Unnamed";
 
         std::string name;
-        std::optional<FileData>
+        std::optional<FileData> backingFile;
+        std::map<std::string, std::vector<Card>> boards;
+        std::string description;
     };
 }
 
